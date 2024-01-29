@@ -1,0 +1,36 @@
+{% extends "main.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <body>
+        <div class="register_container">
+            <h3> Register account </h3>
+            <h5> Create an account to access all the features of Fashout </h5>
+
+            <br>
+
+            <form method="POST" autocomplete="off">
+
+                {% csrf_token %}
+
+                {{form|crispy}}
+
+
+                <br>
+
+                <button type="submit" class="sign_in_button"> Sign up </button>
+            </form>
+
+            <br>
+            <hr>
+            
+            <div>
+                <p> Already have an account? </p> <a href="{% url "user_login" %}"> Sign in </a>
+            </div>
+        </div> 
+    </body>
+
+       
+{% endblock %}
