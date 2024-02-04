@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    <body>
+    <div class="main_wrapper">
         <div class="register_container">
             <h3> Login to account </h3>
             <h5> Welcome back! </h5>
@@ -26,12 +26,11 @@
             <br>
             <hr>
             
-            <div>
+            <div class="already_have_account_button">
                 <p> Don't have an account? </p> <a href="{% url "user_register" %}"> Sign up </a>
             </div>
         </div> 
-    </body>
-
+    </div>
 
 
 {% endblock %}

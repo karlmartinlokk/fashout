@@ -1,10 +1,9 @@
 {% extends "main.html" %}
-
 {% load crispy_forms_tags %}
 
 {% block content %}
 
-    <body>
+    <div class="main_wrapper">
         <div class="register_container">
             <h3> Register account </h3>
             <h5> Create an account to access all the features of Fashout </h5>
@@ -26,11 +25,11 @@
             <br>
             <hr>
             
-            <div>
+            <div class="already_have_account_button">
                 <p> Already have an account? </p> <a href="{% url "user_login" %}"> Sign in </a>
             </div>
         </div> 
-    </body>
+    </div>
 
        
 {% endblock %}

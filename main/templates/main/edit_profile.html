@@ -1,0 +1,26 @@
+{% extends "main.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="main_wrapper">
+        <div class="register_container">
+            <h3> Update Profile Info </h3>
+
+            <br>
+
+            <form method="POST" enctype="multipart/form-data" autocomplete="off">
+
+                {% csrf_token %}
+
+                {{u_form|crispy}}
+                {{p_form|crispy}}
+
+
+                <br>
+
+                <button type="submit" class="sign_in_button"> Confirm </button>
+            </form>
+        </div> 
+    </div>
+{% endblock %}

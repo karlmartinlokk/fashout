@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from .forms import CreateUserForm, LoginUserForm
+from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm
 
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
@@ -21,8 +21,6 @@ def about(request):
 # -- register an user
 
 def user_register(request):
-    form = CreateUserForm()
-
     if request.method == "POST":
         form = CreateUserForm(request.POST)
 
@@ -30,8 +28,10 @@ def user_register(request):
             form.save()
             return redirect("user_login")
 
-    context = {"form":form}
+    else:
+        form = CreateUserForm()
 
+    context = {"form":form}
     return render(request, "main/user_register.html", context=context)
 
 
@@ -64,11 +64,47 @@ def user_logout(request):
 
     return redirect("user_login")
 
+
+
 # -- profile view
 
 @login_required(login_url="user_login")
 def profile(request):
     return render(request, "main/profile.html")
+
+
+
+# -- edit profile
+
+@login_required(login_url="user_login")
+def edit_profile(request):
+    if request.method == "POST":
+        u_form = UpdateUserForm(request.POST, instance=request.user)
+        p_form = UpdateProfilePicForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            return redirect("profile")
+
+    else:
+        u_form = UpdateUserForm(instance=request.user)
+        p_form = UpdateProfilePicForm(instance=request.user.profile)
+
+    context = {
+        "u_form": u_form,
+        "p_form": p_form,
+    }
+
+    return render(request, "main/edit_profile.html", context)
+    
+
+
+
+
+
+
+
 
 
 # homepage

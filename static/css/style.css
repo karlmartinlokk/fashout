@@ -1,25 +1,141 @@
-body {
-    margin: 0px;
-    background-color:#F4F4EE;
+:root {
+    font-size: 16px; /*this helps to define relative sizing (rem)*/
 }
+
+body {
+    background-color:#F4F4EE;
+    padding: 0;
+    margin: 0;
+}
+
+main {
+    margin-left: 5rem; /* sidebar */
+    margin-top: 4rem; /* navtop */
+
+}
+
+.main_wrapper { /*wrapper required to add margin/padding so that navbar doesnt get affected */
+    padding: 2rem;
+}
+
+body::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background-color: #a6a6a6;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #535353;
+    border-radius: 0.25rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* navigation bar */
 
-.navbar ul {
-    list-style-type: none;
-    background-color:#efefe9;
-    padding: 0px;
-    margin: 0px;
-    overflow: hidden;
+
+.navtop {
+    z-index: 100; /* to ensure navbar is always on top on z axis */
+    margin: 0;
+    padding: 0;
+    height: 4rem;
+    top: 0;
+    width: 100%;
+    position: fixed;
+    background-color: rgb(240, 235, 225);
+    border: solid black;
+    
+    
 }
 
-.navbar a {
+.logo {
+    padding: 0.5rem;
+    padding-top: 0.2rem;
+}
+
+.logo a{
     color: black;
     text-decoration: none;
-    padding: 15px;
-    display: block;
-    text-align: right;
+    font-size: 3rem;
 }
+
+
+.sidebar {
+    position: fixed;
+    z-index: 99;
+    margin: 0;
+    padding: 0;
+    width: 5rem; /* same as margin given in main*/
+    height: calc(100vh - 4rem);
+    background-color: rgb(240, 235, 225);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style-type: none;
+    transition: 0.5s width ease; /* animation of sidebar */
+
+}
+
+.nav_item {
+    width: 100%;
+}
+
+.nav_item:last-child {
+    margin-top: auto;
+}
+
+.nav_item a {
+    display: flex;
+    align-items: center;
+    height: 5rem;
+    color: black;
+    text-decoration: none;
+    list-style: none;
+}
+
+.nav_item span {
+    display: none;
+    margin-left: 1rem;
+}
+
+.nav_item svg {
+    min-height: 2rem;
+    margin: 0 1.5rem;
+}
+
+.sidebar:hover {
+    width: 16rem;
+}
+
+.sidebar:hover span{
+    display: inline-block;
+}
+
+.nav_item:hover {
+    background-color: rgb(230, 225, 215)
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -28,20 +144,17 @@ body {
 .register_container {
 
     display: block;
+    padding: 1rem;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5%;
-    margin-bottom: 5%;
+    margin-bottom: 0;
     border-radius: 15px;
     border: 3px;
     border-style: solid;
     border-color:rgb(114, 114, 114);
     box-shadow: 0px 0px 10px 3px #a6a6a6;
     width: 40%;
-    padding: 15px;
-    font-size: 16px;
     background-color: #F4F4EE;
-
 }
 
 .register_container h3 {
@@ -53,16 +166,110 @@ body {
     font-weight: bold;
 }
 
-.register_container p {
+
+.already_have_account_button {
+    text-align: center;
+}
+
+.form_group {
     font-size: 16px;
     font-weight: bold;
-    text-align: center;
 }
+
 .register_container a {
     font-size: 20px;
-    text-align: center;
+    color: #333;
     text-decoration: underline;
 }
+
+
+
+
+
+
+
+
+/* profile */
+
+
+
+.profile_content_section_wrapper {
+    display: flex;
+    flex-direction: column;
+    margin: 3%;
+    height: 800px;
+    width: 94%; /* 100 - margin*2 */
+    border-radius: 25px;
+    overflow:hidden; /* this makes border-radius take effect, otherwise it wont work */
+    background-color: rgb(240, 235, 225);
+}
+
+.profile_content_section {
+    padding: 5%;
+    border: solid black;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.media_body {
+    display: inline-flex;
+    flex-direction: column;
+
+}
+
+.account_img {
+    height: 10rem;
+    width: 10rem;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: solid #cbcbcb;
+    border-width: 5px;
+}
+  
+.username_wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+.account_heading {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.account_secondary {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.edit_profile_button {
+    opacity: 0.6;
+    margin: 0;
+    padding: 0;
+}
+
+.edit_profile_button:hover {
+    opacity: 1;    
+}
+
+.edit_profile_button img {
+    height: 1rem;
+    padding-left: 0.5rem;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 .sign_in_button {
@@ -113,26 +320,30 @@ input[type="password"] {
 
 
 
+
+
+
+
+
+
+
+
 /* homepage */
 
 .homepage_button_container {
     display: flex;
     justify-content: space-between;
     background-color: #e4e4e4;
-    width: 100%;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    width: calc(100% - 2*2rem);
     cursor: default;
 }
 
 .home_main_button {
     flex: 1;
-    box-sizing: border-box;
     max-width: 33.333vw;
     min-width: 30vw;
-    height: 100vh;
+    height: 50rem;
     box-shadow: 0px 0px 8px 0px rgb(153, 153, 153);
-    margin: 0 10px;
     padding: 0;
     cursor: pointer;
     position: relative;
@@ -162,5 +373,6 @@ input[type="password"] {
     top: 75%;
     color: white;
     text-shadow: 0px 0px 0px 1px black;
+    text-decoration: none;
     font-size: 24px;
 }

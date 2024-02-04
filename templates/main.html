@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"> <!--custom raleway font-->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
 
     <style>
@@ -21,13 +21,16 @@
 </head>
 
 <body>
+    
     {% include "navbar.html" %}
 
-    {% block content %}
+    <main>
+        {% block content %}
 
 
 
-    {% endblock %}
+        {% endblock %}
+    </main>
 
 </body>
 

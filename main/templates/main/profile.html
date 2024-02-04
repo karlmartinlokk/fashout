@@ -1,7 +1,29 @@
 {% extends "main.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
-    <h3> profile view </h3>
+    <div class="main_wrapper">
+        <div class="profile_content_section_wrapper">
+            <div class="profile_content_section">
+                <img class="account_img" src= "{{ user.profile.image.url }}">
+
+                <div class="media_body">
+
+                    <div class="username_wrapper">
+                        <p class="account_heading"> {{ user.username }} </p>
+                        <a href="{% url "edit_profile" %}" class="edit_profile_button"> 
+                            <img src="/media/edit_profile.png" alt="edit profile">
+                        </a>
+                    </div>
+
+                    <p class="account_secondary"> {{ user.email }}</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
 
 {% endblock %}
