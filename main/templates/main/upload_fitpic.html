@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+    <div class="main_wrapper">
+        <h3> Add a Post </h3>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+            {{form|crispy}}
+
+            <div> <button> Confirm </button> </div>
+        </form>
+    </div>
+{% endblock %}

@@ -2,7 +2,19 @@
 
 
 {% block content %}
+
     <div class="main_wrapper">
-        browse fits
+
+        {% for post in post_list %}
+
+            <p> {{ post.author }} {{ post.date }} </p>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post_Image">
+            {% endif %}
+            <p> {{ post.caption }} </p>
+            <p> {{ post.likes }} likes </p>
+
+        {% endfor %}
+
     </div>
 {% endblock %}

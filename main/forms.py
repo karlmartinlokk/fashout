@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput
 
-from .models import Profile
+from .models import Profile, Post
 
 
 # -- register user
@@ -79,3 +79,22 @@ class UpdateProfilePicForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ["image"]
+
+
+
+# -- create post form
+        
+class CreatePostForm(forms.ModelForm):
+    
+    caption = forms.CharField(
+        label = "Label",
+        widget = forms.Textarea(attrs={
+            "rows": "2",
+            "placeholder" : "Add caption..."
+        }))
+    
+    image = forms.ImageField(required=False)
+
+    class Meta:
+        model = Post
+        fields = ["image", "caption"]

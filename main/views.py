@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.views import View
 
-from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm
+from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm, CreatePostForm
+from .models import Post
 
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
@@ -32,7 +34,7 @@ def user_register(request):
         form = CreateUserForm()
 
     context = {"form":form}
-    return render(request, "main/user_register.html", context=context)
+    return render(request, "main/user/user_register.html", context=context)
 
 
 
@@ -54,7 +56,7 @@ def user_login(request):
                 return redirect("profile")
 
     context = {"form": form}
-    return render(request, "main/user_login.html", context=context)
+    return render(request, "main/user/user_login.html", context=context)
 
 # -- logout user
 
@@ -70,7 +72,7 @@ def user_logout(request):
 
 @login_required(login_url="user_login")
 def profile(request):
-    return render(request, "main/profile.html")
+    return render(request, "main/user/profile.html")
 
 
 
@@ -96,11 +98,14 @@ def edit_profile(request):
         "p_form": p_form,
     }
 
-    return render(request, "main/edit_profile.html", context)
+    return render(request, "main/user/edit_profile.html", context)
     
 
 
-
+# -- upload fitpic
+@login_required(login_url="user_login")
+def upload_fitpic(request):
+    return render(request, "main/fitpic_upload.html")
 
 
 
@@ -112,8 +117,43 @@ def edit_profile(request):
 def ootd(request):
     return render(request, "main/ootd.html")
 
-def browse_fits(request):
-    return render(request, "main/browse_fits.html")
+
+# -- browse fits // fitpic feed
+
+class PostFeed(View):
+    def get(self, request, *args, **kwargs):
+        posts = Post.objects.all().order_by("-date")
+
+        context = {
+            "post_list": posts,
+        }
+
+        return render(request, "main/browse_fits.html", context)
+
+class UploadFitpic(View):
+    def get(self, request, *args, **kwargs):
+        form = CreatePostForm()
+
+        context = {
+            "form": form,
+        }
+
+        return render(request, "main/upload_fitpic.html", context)
+
+    def post(self, request, *args, **kwargs):
+        form = CreatePostForm(request.POST, request.FILES)
+
+
+        if form.is_valid():
+            new_post = form.save(commit = False)
+            new_post.author = request.user
+            new_post.save()
+            return redirect("profile")
+        context = {
+            "form": form,
+        }
+        
+        return render(request, "main/upload_fitpic.html", context)
 
 def style_guide(request):
     return render(request, "main/style_guide.html")

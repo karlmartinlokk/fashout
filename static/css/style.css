@@ -3,7 +3,7 @@
 }
 
 body {
-    background-color:#F4F4EE;
+    background-color: rgb(225, 225, 220);
     padding: 0;
     margin: 0;
 }
@@ -15,7 +15,7 @@ main {
 }
 
 .main_wrapper { /*wrapper required to add margin/padding so that navbar doesnt get affected */
-    padding: 2rem;
+    padding: 1rem;
 }
 
 body::-webkit-scrollbar {
@@ -193,26 +193,25 @@ body::-webkit-scrollbar-thumb {
 
 
 
-.profile_content_section_wrapper {
+.profile_content{
     display: flex;
     flex-direction: column;
     margin: 3%;
-    height: 800px;
     width: 94%; /* 100 - margin*2 */
     border-radius: 25px;
     overflow:hidden; /* this makes border-radius take effect, otherwise it wont work */
     background-color: rgb(240, 235, 225);
 }
 
-.profile_content_section {
+.account_info_wrapper {
     padding: 5%;
-    border: solid black;
+    border-bottom: solid black;
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.media_body {
+.account_info {
     display: inline-flex;
     flex-direction: column;
 
@@ -259,6 +258,55 @@ body::-webkit-scrollbar-thumb {
     height: 1rem;
     padding-left: 0.5rem;
 }
+
+
+.profile_bottom_wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+    padding: 1rem; 
+    height: 50rem;
+}
+
+.profile_posts {
+    display: flex;
+    justify-content: space-between;
+    width: calc((100% - 2rem)*0.70);
+    height: 50rem;
+    border-radius: 0.5rem;
+}
+
+
+.profile_create_post {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(220, 220, 220);
+    width: 32%;
+    height: 0;
+    padding-bottom: 32%;
+    border-radius: 0.5rem;
+
+}
+
+.profile_create_post svg {
+    height: 4rem;
+}
+
+
+.profile_favorite_brands {
+    display: flex;
+    flex-direction: column;
+    width: calc((100% - 2rem)*0.25);
+    padding: 1rem;
+    padding-top: 0;
+    border-radius: 0.5rem;
+    border: solid 0.1rem black;
+}
+
+
+
+
 
 
 
@@ -332,47 +380,45 @@ input[type="password"] {
 
 .homepage_button_container {
     display: flex;
-    justify-content: space-between;
-    background-color: #e4e4e4;
-    width: calc(100% - 2*2rem);
+    width: calc(100% - 2*1rem);
     cursor: default;
 }
 
-.home_main_button {
+.homepage_button {
+    display: flex;
     flex: 1;
-    max-width: 33.333vw;
-    min-width: 30vw;
-    height: 50rem;
-    box-shadow: 0px 0px 8px 0px rgb(153, 153, 153);
+    max-width: 23rem;
+    height: 40rem;
     padding: 0;
     cursor: pointer;
     position: relative;
     opacity: 0.75;
     transition: opacity 0.5s;
+    text-align: center;
 }
 
-.home_main_button:hover {
+.homepage_button:first-child {
+    margin-right: calc((100%-2*1rem - 3*23rem)/2)
+}
+
+.homepage_button:hover {
     opacity: 1;
 }
 
-.home_main_button img {
+.homepage_button img {
     display: block;
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
+    max-width: 23rem;
+    height: 40rem;
 }
 
-.home_main_button div {
+.homepage_button span {
     z-index: 1;
-    position: relative;
-    text-align: center;
+    display: inline-block;
+    position: absolute;
     top: 75%;
     color: white;
     text-shadow: 0px 0px 0px 1px black;
     text-decoration: none;
-    font-size: 24px;
+    font-size: 2rem;
 }
