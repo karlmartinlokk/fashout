@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput
 
-from .models import Profile, Post
+from .models import Profile, Post, Comment
 
 
 # -- register user
@@ -46,8 +46,18 @@ class CreateUserForm(UserCreationForm):
 #-- login user
 class LoginUserForm(AuthenticationForm):
 
-    username = forms.CharField(widget=TextInput())
-    password = forms.CharField(widget=PasswordInput())
+    username = forms.CharField(
+        label="",
+        widget=TextInput(attrs={
+            "placeholder": "username"
+        }),
+    )
+    password = forms.CharField(
+        label="",
+        widget=PasswordInput(attrs={
+            "placeholder": "password"
+        }),
+    )
 
 
 
@@ -87,14 +97,43 @@ class UpdateProfilePicForm(forms.ModelForm):
 class CreatePostForm(forms.ModelForm):
     
     caption = forms.CharField(
-        label = "Label",
+        label = "",
+        max_length = 50,
         widget = forms.Textarea(attrs={
             "rows": "2",
-            "placeholder" : "Add caption..."
+            "placeholder" : "Add caption...",
+            "class": "form_control_caption",
         }))
     
-    image = forms.ImageField(required=False)
+    image = forms.ImageField(
+        label = "",
+        widget = forms.FileInput(attrs={
+            "class": "form_control_image",
+    }))
+
+    def clean_caption(self):
+            caption = self.cleaned_data.get('caption')
+            if len(caption) > 50:
+                raise forms.ValidationError("Caption length should not exceed 50 characters.")
+            return caption
 
     class Meta:
         model = Post
         fields = ["image", "caption"]
+
+
+# -- create comment form
+        
+class CommentForm(forms.ModelForm):
+
+    caption = forms.CharField(
+        label = "",
+        max_length= 300,
+        widget = forms.Textarea(attrs={
+            "rows": "2",
+            "placeholder" : "write a comment..."
+        }))
+
+    class Meta:
+        model = Comment
+        fields = ["caption"]

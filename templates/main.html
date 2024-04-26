@@ -10,12 +10,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"> <!--custom raleway font-->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> <!-- google jquery cdn -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <script> var csrfToken = "{{ csrf_token }}"; </script> <!-- neccessary to call csrf_token in external js file -->
+    <script> var userId = "{{ request.user.id }}"; </script>
 
 
+    {% if request.user.is_authenticated %}
+    <script> var isAuthenticated = true; </script>
+    {% else %}
+    <script> var isAuthenticated = false; </script>
+    {% endif %}
 
     <style>
            body {
-            font-family: "Raleway";font-size: 22px;
+            font-family: "Raleway";
         }
     </style>
 </head>
@@ -24,7 +34,7 @@
     
     {% include "navbar.html" %}
 
-    <main>
+    <main class="main_main">
         {% block content %}
         
         {% endblock %}

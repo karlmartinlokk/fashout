@@ -4,31 +4,29 @@
 
     <div class="main_wrapper">
 
-        <a href="{% url "upload_fitpic" %}">upload fitpic</a>
+        <div class="homepage_button_grid">
 
-        <div class="homepage_button_container">
-
-        <div class="homepage_button">
-            <a href="{% url 'ootd' %}">
-                <img src="https://i.pinimg.com/originals/45/99/63/459963d972ee9bf40309d6a2ac719752.jpg" alt="OOTD">
-                <span> OOTD </span>
-            </a>
-        </div>
+            <div class="homepage_button">
+                <a href="{% url 'ootd' %}">
+                    <img src="media/user_posts/{{ random_image_ootd }}" alt="OOTD">
+                    <span> OOTD </span>
+                </a>
+            </div>
 
 
-        <div class="homepage_button">
-            <a href="{% url 'browse_fits' %}">
-                <img src="https://i.pinimg.com/originals/45/99/63/459963d972ee9bf40309d6a2ac719752.jpg" alt="BROWSE FITS">
-                <span> BROWSE FITS </span>
-            </a>
-        </div> 
+            <div class="homepage_button">
+                <a href="{% url 'browse_fits' %}">
+                    <img src="media/user_posts/{{ random_image_browse_fits }}" alt="BROWSE FITS">
+                    <span> BROWSE FITS </span>
+                </a>
+            </div> 
 
-        <div class="homepage_button">
-            <a href="{% url 'style_guide' %}">
-                <img src="https://i.pinimg.com/originals/45/99/63/459963d972ee9bf40309d6a2ac719752.jpg" alt="STYLE GUIDE">
-                <span> STYLE GUIDE </span>
-            </a>
-        </div>
+            <div class="homepage_button">
+                <a href="{% url 'style_guide' %}">
+                    <img src="media/user_posts/{{ random_image_style_guide }}" alt="STYLE GUIDE">
+                    <span> STYLE GUIDE </span>
+                </a>
+            </div>
 
         </div>
 

@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+    <div class="main_wrapper">
+        <div class="post_create_wrapper">
+            
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+                        <div class="post_create_grid">
+                            <div class="post_create_left">
+                                <label for="id_image">
+                                    <img id="preview_image" src="/media/user_posts/giabao_x.jpg" alt="Default Image" class="form_control_image">
+                                    {{ form.image }} 
+                                </label>
+                            </div>
+
+                            <div class="post_create_right">
+                                {{ form.caption }}
+                                <br>    
+                                <button type="submit" name="action" value="save"> Save </button>
+                                <a href="{% url 'post_delete_confirmation' pk=post.pk %}"> Delete </a>
+
+                            </div>
+                        </div>
+
+                    </form>
+        </div>
+    </div>
+    
+
+    
+{% endblock %}

@@ -8,7 +8,7 @@ body {
     margin: 0;
 }
 
-main {
+.main_main {
     margin-left: 5rem; /* sidebar */
     margin-top: 4rem; /* navtop */
 
@@ -27,10 +27,13 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-    background-color: #535353;
+    background-color: #535353;  
     border-radius: 0.25rem;
 }
 
+form {
+    font-family: "Raleway", sans-serif; /* needs a fix */
+}
 
 
 
@@ -90,6 +93,7 @@ body::-webkit-scrollbar-thumb {
 
 .nav_item {
     width: 100%;
+    transition: background-color 0.5s;
 }
 
 .nav_item:last-child {
@@ -141,24 +145,89 @@ body::-webkit-scrollbar-thumb {
 
 /* registration */
 
-.register_container {
+.login_main {
+    padding: 0;
+    margin: 0;
+    width: 100dvw;
+    height: 100dvh;
+}
 
+.login_wrapper {
+    display: flex;
+    height: 100%;
+
+}
+
+.login_left {
+    display: flex;
+    position: relative; /* for overflow to work */
+    margin: 0;
+    padding: 0;
+    width: 50dvw;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.login_left_img {
+    position: absolute; /* req for z-index to work as intended */
+    object-fit: cover;
+    z-index: 1;
+    width: 50dvw;
+    opacity: 0.7;
+}
+
+
+.login_left h1 {
+    position: relative; /* req for z-index to work as intended */
+    z-index: 2;
+    text-align: center;
+    font-size: 4rem;
+    font-weight: lighter;
+    color: white;
+    text-shadow: 0 0 0.5rem #333;
+}
+
+.login_left h2 {
+    position: relative; /* req for z-index to work as intended */
+    z-index: 2;
+    text-align: center;
+    font-size: 2rem;
+    font-style: italic;
+    font-weight: lighter;
+    color: white;
+    text-shadow: 0 0 0.5rem #333;
+
+}
+
+
+.login_right {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 50dvw;
+    background-color: rgb(240, 235, 225);
+
+}
+
+.register_container_wrapper {
+    display: block;
+    margin-top: 25%;
+}
+
+.register_container {
     display: block;
     padding: 1rem;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 0;
-    border-radius: 15px;
-    border: 3px;
-    border-style: solid;
-    border-color:rgb(114, 114, 114);
+    text-align: center;
     box-shadow: 0px 0px 10px 3px #a6a6a6;
     width: 40%;
     background-color: #F4F4EE;
 }
 
 .register_container h3 {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
 }
 .register_container h5 {
@@ -166,6 +235,34 @@ body::-webkit-scrollbar-thumb {
     font-weight: bold;
 }
 
+.login_form {
+    width: 100%;
+    overflow: hidden;
+}
+
+#div_id_password {
+    text-align: left;
+}
+
+#div_id_username {
+    text-align: left;
+    margin-bottom: 0.5rem;
+}
+
+#id_username {
+    padding: 0.5rem;
+    border-radius: 0.2rem;
+    border-width: 0.1rem;
+    width: calc(100% - 1.2rem); /* full width minus padding+border */
+
+}
+
+#id_password {
+    padding: 0.5rem;
+    border-radius: 0.2rem;
+    border-width: 0.1rem;
+    width: calc(100% - 1.2rem); /* full width minus padding+border */
+}
 
 .already_have_account_button {
     text-align: center;
@@ -263,41 +360,55 @@ body::-webkit-scrollbar-thumb {
 .profile_bottom_wrapper {
     display: flex;
     flex: 1;
-    justify-content: space-around;
+    justify-content: space-between;
     padding: 1rem; 
-    height: 50rem;
 }
 
-.profile_posts {
-    display: flex;
-    justify-content: space-between;
-    width: calc((100% - 2rem)*0.70);
-    height: 50rem;
+.profile_posts_grid {
+    display: grid;
+    width: calc(3*18rem+1rem);
+    padding-right: 0.5rem;
+    grid-template-columns: repeat(3, 1fr); /* three equal width columns*/
+    grid-gap: 0.5rem;
     border-radius: 0.5rem;
 }
 
 
-.profile_create_post {
+.profile_post {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgb(220, 220, 220);
-    width: 32%;
-    height: 0;
-    padding-bottom: 32%;
+    background-color: rgb(120, 120, 120);
+    width: 18rem;
+    height: 18rem;
     border-radius: 0.5rem;
+    overflow: hidden;
+    transition: filter 0.3s; /* transition: brightness 0.5s doesnt work */
+
+
 
 }
 
-.profile_create_post svg {
+.profile_post svg {
     height: 4rem;
 }
 
+.profile_post img {
+    display: block;
+    object-fit: cover;
+    width: 18rem;
+    height: 18rem;
+}
+
+.profile_post:hover {
+    filter: brightness(0.7);
+    transition: filter 0.3s; /* transition: brightness 0.5s doesnt work */
+}
 
 .profile_favorite_brands {
     display: flex;
     flex-direction: column;
-    width: calc((100% - 2rem)*0.25);
+    width: 20rem;
     padding: 1rem;
     padding-top: 0;
     border-radius: 0.5rem;
@@ -378,37 +489,32 @@ input[type="password"] {
 
 /* homepage */
 
-.homepage_button_container {
-    display: flex;
-    width: calc(100% - 2*1rem);
-    cursor: default;
+.homepage_button_grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1rem;
 }
 
 .homepage_button {
     display: flex;
-    flex: 1;
-    max-width: 23rem;
-    height: 40rem;
-    padding: 0;
-    cursor: pointer;
-    position: relative;
-    opacity: 0.75;
+    opacity: 0.8;
     transition: opacity 0.5s;
+    justify-content: center;
     text-align: center;
-}
-
-.homepage_button:first-child {
-    margin-right: calc((100%-2*1rem - 3*23rem)/2)
+    position: relative;
 }
 
 .homepage_button:hover {
+    transition: opacity 0.5s;
     opacity: 1;
 }
+
 
 .homepage_button img {
     display: block;
     object-fit: cover;
-    max-width: 23rem;
+    width: 100%;
     height: 40rem;
 }
 
@@ -417,8 +523,423 @@ input[type="password"] {
     display: inline-block;
     position: absolute;
     top: 75%;
+    transform: translate(-50%, -50%); /* Center the text vertically and horizontally */
     color: white;
-    text-shadow: 0px 0px 0px 1px black;
     text-decoration: none;
     font-size: 2rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.browse_fits_feed {
+    display: grid;
+    padding: 0.5rem;
+    width: 100%;
+    background-color: rgb(240, 235, 225);
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 0.5rem;
+}
+
+.browse_fits_post {
+    display: block;
+    box-shadow: 0 0 0.15rem 0.01rem #333;
+    width: 100%;
+    aspect-ratio: 9/16;
+    transition: filter 0.3s;
+}
+
+.browse_fits_post:hover {
+    filter: brightness(0.9);
+}
+
+.browse_fits_post img {
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    aspect-ratio: 9/16;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+.post_create_wrapper {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60dvw;
+    height: 85dvh;
+    background-color: #F4F4EE;
+}
+
+.post_create_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.post_create_right {
+    display: block;
+    height: calc(85dvh - 1.6rem);
+    padding: 0.3rem;
+    background-color: red;
+}
+
+.post_create_right #id_caption {
+    width: calc(100% - 0.3rem - 1rem);
+    height: 20%;
+    padding: 0.5rem;
+    opacity: 0.7;
+}
+
+.post_create_left {
+    display: flex;
+    position: relative;
+    height: calc(85dvh - 1.9 rem);
+    padding: 0.2rem;
+    background-color: aqua;
+    overflow: hidden;
+
+}
+
+.form_control_image {
+    display: block;
+    position: absolute;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.form_control_image:hover {
+    filter: brightness(0.95)
+}
+
+.form_control_image::-webkit-file-upload-button {
+    display: none;
+}
+
+.form_control_caption {
+    width: 100%;
+}
+
+input[type='file'] {
+    color: transparent;
+ }
+
+ label[for="id_image"] img {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    object-fit: cover;
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.post_view_grid {
+    display: grid;
+    width: 55rem; /*calc(3*18rem+1rem)*/
+    grid-template-columns: calc(0.5*55rem) calc(0.1*55rem) calc(0.3*55rem);
+    grid-gap: 0.5rem;
+}
+
+.post_view_image_wrapper {
+    position: relative;
+    display: block;
+    width: calc(0.5*55rem - 0.2rem);
+    height: calc(36rem - 0.2rem);
+    border: solid 0.1rem black;
+    overflow: hidden;
+}
+
+.post_view_image img {
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    height: 36rem;
+}
+
+.post_view_nav {
+    display: block;
+}
+
+.post_view_back {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    display: inline-block;
+    
+}
+
+.post_view_back a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+    width: 3rem;
+    padding: 0;
+    border-radius: 1rem;
+}
+
+.post_view_back svg {
+    width: 50%;
+    height: 50%;
+}
+
+
+.post_view_nav_button {
+    text-align: center;
+    margin: 0.5rem;
+    width: calc(100%-1rem);
+    aspect-ratio: 1/1;
+    
+}
+
+.post_view_nav_button:hover {
+    filter: brightness(0.9)
+}
+
+#like_button {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+}
+
+.post_view img {
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.post_view_right {
+    display: grid;
+    grid-template-rows: auto 1fr; /*top element automatically sized (based on caption length), bottom element takes up rest */
+    grid-gap: 0.5rem;
+    height: 36rem;
+
+}
+.post_view_caption_wrapper {
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+.post_view_caption   {
+    display: flex;
+    flex-direction: column;
+    border: solid black;
+    padding: 1rem;
+}
+
+.post_view_caption h5 {
+    font-size: 0.6rem;
+    color:rgb(120, 120, 120);
+}
+
+.post_view_author {
+    display: flex;
+    font-weight: bold;
+}
+
+.post_account_img_wrapper {
+    display: block;
+    height: 3rem;
+    width: 3rem;
+    margin-right: 0.5rem;
+    border: solid rgb(225, 225, 220);
+    border-radius: 50%;
+}
+
+
+.post_account_img {
+    height: 3rem;
+    width: 3rem;
+    object-fit: cover;
+    border-radius: 50%;
+
+}
+
+.post_view_side_with_comment_form {
+    border: solid black;
+}
+
+
+
+.post_view_side_wrapper {
+    display: block;
+    padding: 1rem;
+    width: (0.3*55rem);
+    max-height: calc(5 / 8 * 36rem - 2.4rem);
+    text-align: center;
+    overflow-y:auto;
+
+}
+
+.post_view_side_wrapper::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+.post_view_side_wrapper::-webkit-scrollbar-track {
+    background-color: #a6a6a6;
+}
+
+.post_view_side_wrapper::-webkit-scrollbar-thumb {
+    background-color: #535353;
+    border-radius: 0.25rem;
+}
+
+.comments_section {
+    overflow-y:auto;
+    width: 100%;
+}
+
+#comment_form_wrapper {
+    position: sticky;
+    bottom: 0;
+    width: (0.3*55rem);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: solid 0.1rem #cbcbcb;
+}
+
+.comment_form {
+    display: flex;
+    flex: 1;
+    height: 2rem;
+}
+
+
+#id_caption {
+    width: calc(100% - 2*0.5rem);
+    padding: 0.5rem;
+    border: none;
+    resize: none;
+    background-color: #F4F4EE;
+}
+
+.comment_submit {
+    border: none;
+    filter: brightness(1);
+    transition: filter 0.15s;
+}
+
+.comment_submit svg {
+    display: block;
+    height: 1rem;
+    width: 1rem;
+}
+
+.comment_submit:hover {
+    filter: brightness(0.9);
+    transition: filter 0.15s;
+}
+
+.comment {
+    display: flex;
+    flex-direction: column;
+    border: solid 0.1rem #333;
+    border-radius: 0.2rem;
+    padding: 0.5rem;
+}
+
+.comment_author {
+    display: flex;
+    align-items: center;
+}
+
+.comment_author h3 {
+    font-size: 0.8rem;
+    margin-right: 0.2rem;
+}
+
+.comment_author h5 {
+    font-size: 0.5rem;
+    color: #a6a6a6;
+}
+
+.comment_caption {
+    display: block;
+    text-align: left;
+    padding: 0;
+}
+
+.comment_caption p {
+    font-size: 0.8rem;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.comment_account_img_wrapper {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 0.2rem;
+}
+
+.comment_account_img {
+    object-fit: cover;
+    height: 2rem;
+    width: 2rem;
+}
+
+.comment_delete {
+    display: flex;
+    flex-grow: 1;
+}
+
+.comment_delete_submit {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    margin-left: auto;
+    background-color: #F4F4EE;
+}
+
+.comment_delete_submit svg {
+    width: 1rem;
+    height: 1rem;
 }

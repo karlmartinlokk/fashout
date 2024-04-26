@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> FASHOUT </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"> <!--custom raleway font-->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+           body {
+            font-family: "Raleway";
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="login_main">
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+
+</body>
+
+</html>

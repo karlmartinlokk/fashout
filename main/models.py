@@ -23,8 +23,18 @@ class Profile(models.Model): #class based view
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE) # ForeignKey is one to many relationship i.e one user can have many posts
+    date = models.DateTimeField(default=datetime.now)
     image = models.ImageField(upload_to="user_posts", blank=True, null=True)
     caption = models.TextField()
-    date = models.DateTimeField(default=datetime.now)
-    likes = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, blank=True, related_name="post_likes")
+    like_count = models.BigIntegerField(default="0")
 
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    raw_date = models.DateTimeField(default=datetime.now)
+    def date(self):
+        return self.raw_date.strftime("%d/%m/%y")
+    caption = models.TextField()
+    likes = models.ManyToManyField(User, blank=True, related_name="comment_likes")
+    like_count = models.BigIntegerField(default="0")

@@ -5,14 +5,53 @@
 {% block content %}
 
     <div class="main_wrapper">
-        <h3> Add a Post </h3>
+        <div class="post_create_wrapper">
+            
 
-        <form method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data">
 
-            {% csrf_token %}
-            {{form|crispy}}
+                        {% csrf_token %}
+                        <div class="post_create_grid">
+                            <div class="post_create_left">
+                                <label for="id_image">
+                                    <img id="preview_image" src="/media/user_posts/giabao_x.jpg" alt="Default Image" class="form_control_image">
+                                    {{ form.image }} 
+                                </label>
+                            </div>
 
-            <div> <button> Confirm </button> </div>
-        </form>
+                            <div class="post_create_right">
+                                {{ form.caption }}
+                                <br>    
+                                <button type="submit">Confirm</button>
+                            </div>
+                        </div>
+
+                    </form>
+        </div>
     </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    $('#preview_image')
+                        .attr('src', e.target.result);
+                };
+    
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    
+        // Trigger the previewImage function when a file is selected
+        $(document).ready(function() {
+            $("#id_image").change(function() {
+                previewImage(this);
+            });
+        });
+    </script>
+    
+
+    
 {% endblock %}

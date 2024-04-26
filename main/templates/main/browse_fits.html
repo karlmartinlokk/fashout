@@ -4,17 +4,34 @@
 {% block content %}
 
     <div class="main_wrapper">
+                <div class="browse_fits_feed">
 
-        {% for post in post_list %}
+                    {% for post in post_list %}
 
-            <p> {{ post.author }} {{ post.date }} </p>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="Post_Image">
-            {% endif %}
-            <p> {{ post.caption }} </p>
-            <p> {{ post.likes }} likes </p>
+                        <!--<div class="autor_and_date"> 
+                            <p> {{ post.author }} {{ post.date }} </p>
+                        </div>-->
+                        
+                        {% if post.image %}
 
-        {% endfor %}
+                            <div class="browse_fits_post">
+                                <a href="{% url "post_view" pk=post.pk %}">
+                                    <img src="{{ post.image.url }}" alt="Post_Image">
+                                </a>
+                            </div>
 
+                        {% endif %}
+                        <!--<div class="caption"> 
+                            <p> {{ post.caption }} </p>
+                        </div>
+                        <div class="likes">
+                            <p> {{ post.likes }} likes </p>
+                        </div>
+
+                        <hr>--> 
+
+                    {% endfor %}
+
+                </div>
     </div>
 {% endblock %}

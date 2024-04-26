@@ -1,33 +1,49 @@
-{% extends "main.html" %}
-
+{% extends "login.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 
-    <div class="main_wrapper">
-        <div class="register_container">
-            <h3> Login to account </h3>
- 
+    <div class="login_wrapper">
 
-            <form method="POST" autocomplete="off">
-
-                {% csrf_token %}
-
-                {{form|crispy}}
-
-
-                <br>
-
-                <button type="submit" class="sign_in_button"> Sign in </button>
-            </form>
-
-            <br>
-            <hr>
+        <div class="login_left">
+            <img src="https://i.pinimg.com/originals/45/99/63/459963d972ee9bf40309d6a2ac719752.jpg" class="login_left_img">
             
-            <div class="already_have_account_button">
-                <p> Don't have an account? </p> <a href="{% url "user_register" %}"> Sign up </a>
+            <div class="login_left_text">
+                <h1> FASHOUT </h1>
+
+                <h2> connect. </h2>
+                <h2> create. </h2>
+                <h2> inspire. </h2>
             </div>
-        </div> 
+        </div>
+
+        <div class="login_right">
+            <div class="register_container_wrapper">
+                <div class="register_container">
+                    <h3> Login </h3>
+        
+
+                    <form method="POST" autocomplete="off" class="login_form">
+
+                        {% csrf_token %}
+
+                        {{form|crispy}}
+
+
+                        <br>
+
+                        <button type="submit" class="sign_in_button"> Sign in </button>
+                    </form>
+
+                    <br>
+                    <hr>
+                    
+                    <div class="already_have_account_button">
+                        <p> Don't have an account? </p> <a href="{% url "user_register" %}"> Sign up </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 

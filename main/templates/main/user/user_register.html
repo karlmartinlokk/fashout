@@ -1,34 +1,51 @@
-{% extends "main.html" %}
+{% extends "login.html" %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 
-    <div class="main_wrapper">
-        <div class="register_container">
-            <h3> Register account </h3>
-            <h5> Create an account to access all the features of Fashout </h5>
+    <div class="login_wrapper">
 
-            <br>
+        <div class="login_left">
+            <img src="https://i.pinimg.com/originals/45/99/63/459963d972ee9bf40309d6a2ac719752.jpg" class="login_left_img">
 
-            <form method="POST" autocomplete="off">
+            <div class="login_left_text">
+                <h1> FASHOUT </h1>
 
-                {% csrf_token %}
-
-                {{form|crispy}}
-
-
-                <br>
-
-                <button type="submit" class="sign_in_button"> Sign up </button>
-            </form>
-
-            <br>
-            <hr>
-            
-            <div class="already_have_account_button">
-                <p> Already have an account? </p> <a href="{% url "user_login" %}"> Sign in </a>
+                <h2> connect. </h2>
+                <h2> create. </h2>
+                <h2> inspire. </h2>
             </div>
-        </div> 
+        </div>
+
+        <div class="login_right">
+            <div class="register_container_wrapper">
+                <div class="register_container">
+                    <h3> Register account </h3>
+                    <h5> Create an account to access all the features of Fashout </h5>
+
+                    <br>
+
+                    <form method="POST" autocomplete="off">
+
+                        {% csrf_token %}
+
+                        {{form|crispy}}
+
+
+                        <br>
+
+                        <button type="submit" class="sign_in_button"> Sign up </button>
+                    </form>
+
+                    <br>
+                    <hr>
+                    
+                    <div class="already_have_account_button">
+                        <p> Already have an account? </p> <a href="{% url "user_login" %}"> Sign in </a>
+                    </div>
+                </div> 
+            </div>
+        </div>
     </div>
 
        
