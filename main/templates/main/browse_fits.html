@@ -4,20 +4,39 @@
 {% block content %}
 
     <div class="main_wrapper">
+
+        <div class="browse_wrapper">
+
+            <div class="browse_wrapper_left">
+
+                <div class="browse_title">
+                    <span> Browse in All </span>
+                </div>
+
                 <div class="browse_fits_feed">
 
                     {% for post in post_list %}
 
-                        <!--<div class="autor_and_date"> 
+                        <!--<div class="author_and_date"> 
                             <p> {{ post.author }} {{ post.date }} </p>
                         </div>-->
                         
                         {% if post.image %}
 
                             <div class="browse_fits_post">
+                                
                                 <a href="{% url "post_view" pk=post.pk %}">
                                     <img src="{{ post.image.url }}" alt="Post_Image">
                                 </a>
+
+                                <div class="browse_fits_author">
+                                    <a href="/profile/{{ post.author.username }}" class="browse_fits_profile">
+                                        <img class="post_account_img" src= "{{ post.author.profile.profile_image.url }}">
+                                    </a>
+                                    <div class="browse_fits_caption">
+                                        <span> {{post.caption}} </span>
+                                    </div>
+                                </div>
                             </div>
 
                         {% endif %}
@@ -33,5 +52,17 @@
                     {% endfor %}
 
                 </div>
+            </div>
+
+            <div class="browse_wrapper_right">
+
+                <div class="browse_filter_title"> Filter </div>
+
+                <div class="browse_filter">
+                    
+                </div>
+
+            </div>
+        </div>
     </div>
 {% endblock %}

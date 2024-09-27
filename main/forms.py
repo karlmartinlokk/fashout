@@ -67,15 +67,19 @@ class LoginUserForm(AuthenticationForm):
 class UpdateUserForm(forms.ModelForm):
 
     username = forms.CharField(
-        label='Username',
-        widget=TextInput(),
+        label='',
+        widget=TextInput(attrs={
+            "placeholder": "username"
+        }),
         error_messages={
             'unique': 'This username is already taken. Please choose a different one.',
         }
     )
     email = forms.EmailField(
-        label='Email',
-        widget=TextInput(),
+        label='',
+        widget=TextInput(attrs={
+            "placeholder": "email"
+        }),
         error_messages={
             'unique': 'This email address is already registered. Please use a different one.',
         }
@@ -86,15 +90,30 @@ class UpdateUserForm(forms.ModelForm):
         fields = ["username", "email"]
 
 class UpdateProfilePicForm(forms.ModelForm):
+
+    profile_image = forms.ImageField(
+        label=''
+    )
     class Meta:
         model = Profile
-        fields = ["image"]
+        fields = ["profile_image"]
 
 
 
 # -- create post form
         
-class CreatePostForm(forms.ModelForm):
+class CreatePostFormImage(forms.ModelForm):
+    image = forms.ImageField(
+        label = "",
+        widget = forms.ClearableFileInput(attrs={
+            "class": "form_control_image",
+    }))
+
+    class Meta:
+        model = Post
+        fields = ["image"]
+
+class CreatePostFormCaption(forms.ModelForm):
     
     caption = forms.CharField(
         label = "",
@@ -105,12 +124,6 @@ class CreatePostForm(forms.ModelForm):
             "class": "form_control_caption",
         }))
     
-    image = forms.ImageField(
-        label = "",
-        widget = forms.FileInput(attrs={
-            "class": "form_control_image",
-    }))
-
     def clean_caption(self):
             caption = self.cleaned_data.get('caption')
             if len(caption) > 50:
@@ -119,7 +132,29 @@ class CreatePostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["image", "caption"]
+        fields = ["caption"]
+
+class CreatePostFormPieces(forms.ModelForm):
+    
+    caption = forms.CharField(
+        label = "",
+        max_length = 50,
+        widget = forms.Textarea(attrs={
+            "rows": "2",
+            "placeholder" : "Add pieces...",
+            "class": "form_control_caption",
+        }))
+    
+    def clean_caption(self):
+            caption = self.cleaned_data.get('caption')
+            if len(caption) > 50:
+                raise forms.ValidationError("Caption length should not exceed 50 characters.")
+            return caption
+
+    class Meta:
+        model = Post
+        fields = ["caption"]
+
 
 
 # -- create comment form

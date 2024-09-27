@@ -1,57 +1,125 @@
 {% extends "main.html" %}
 {% load crispy_forms_tags %}
 
-
 {% block content %}
-
     <div class="main_wrapper">
         <div class="post_create_wrapper">
-            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="post_create_grid">
+                    <div class="post_create_left">
+                        <label for="id_image">
+                            <img id="preview_image" src="{{ image_url }}" alt="Upload fitpic default image" class="form_control_image">
+                            {{ image_form.image }} 
+                        </label>
+                    </div>
 
-                    <form method="POST" enctype="multipart/form-data">
 
-                        {% csrf_token %}
-                        <div class="post_create_grid">
-                            <div class="post_create_left">
-                                <label for="id_image">
-                                    <img id="preview_image" src="/media/user_posts/giabao_x.jpg" alt="Default Image" class="form_control_image">
-                                    {{ form.image }} 
-                                </label>
-                            </div>
-
-                            <div class="post_create_right">
-                                {{ form.caption }}
+                    
+                    <div class="post_create_right">
+                        {% if step == 1 %}
+                            <div class="step1">
+                                {% crispy caption_form %}
                                 <br>    
-                                <button type="submit">Confirm</button>
+                                <button class="upload_next" type="submit" name="step" value="1"> Next </button>
+                                <button class="upload_cancel"> <a href="javascript:history.back()" style="text-decoration: none; color:black"> Cancel </a> </button>
                             </div>
+                        {% elif step == 2 %}
+                            <div class="step2">
+                                {% crispy pieces_form %}
+                                <br>    
+                                <button class="upload_confirm" type="submit" name="step" value="2"> Confirm </button>
+                                <button class="upload_cancel"> <a href="javascript:history.back()" style="text-decoration: none; color:black"> Cancel </a> </button>
+                            </div>
+                        {% endif %}
+                        
+                        <div style="text-align:center;margin-top:90%;">
+                            {% for i in steps_range %}
+                                <span class="step{% if step == i %} active{% endif %}"></span>
+                            {% endfor %}
                         </div>
-
-                    </form>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-    
-                reader.onload = function(e) {
-                    $('#preview_image')
-                        .attr('src', e.target.result);
-                };
-    
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    
-        // Trigger the previewImage function when a file is selected
         $(document).ready(function() {
-            $("#id_image").change(function() {
-                previewImage(this);
+            var imageFile = null; // Store the uploaded image file globally
+            
+            // Function to submit the form via AJAX
+            function submitForm(step) {
+                var formData = new FormData($('form')[0]);
+                formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+                formData.append('step', step);
+
+                if (step == 2 && imageFile) {
+                    // Append the previously selected image file for step 2
+                    formData.append('image', imageFile);
+                }
+
+                $.ajax({
+                    url: $('form').attr('action'),
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.success) {
+                            if (data.next_step) {
+                                window.location.href = window.location.pathname + '?step=' + data.next_step;
+                            } else {
+                                // Redirect to profile if final step is complete
+                                window.location.href = '{% url "profile" %}';
+                            }
+                        } else {
+                            console.log('Form submission failed');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Function to preview the uploaded image
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    // Save the uploaded file to the global variable
+                    imageFile = input.files[0];
+
+                    reader.onload = function(e) {
+                        $('#preview_image').attr('src', e.target.result); // Update the image preview
+                    };
+
+                    reader.readAsDataURL(imageFile); // Convert the file to a Base64-encoded string
+                }
+            }
+
+            // Event listener for when the image file changes
+            $(document).on('change', '#id_image', function() {
+                previewImage(this); // Call the preview function
+            });
+
+            // Event listener for the 'Confirm' button in step 2
+            $(document).on('click', '.upload_confirm', function(e) {
+                e.preventDefault();
+                var step = $(this).val(); // Get the step value (2 for confirmation)
+                console.log('Confirm button clicked for step:', step);
+                submitForm(step); // Submit the form for step 2
+            });
+
+            // Event listener for the 'Next' button in step 1
+            $(document).on('click', '.upload_next', function(e) {
+                e.preventDefault();
+                var step = $(this).val(); // Get the step value (1 for next step)
+                console.log('Next button clicked for step:', step);
+                submitForm(step); // Submit the form for step 1
             });
         });
     </script>
-    
-
     
 {% endblock %}

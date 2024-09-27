@@ -3,15 +3,17 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views import View 
 from django.views.generic.edit import UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
-from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm, CreatePostForm, CommentForm
+from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm, CreatePostFormImage, CreatePostFormCaption, CreatePostFormPieces, CommentForm
 from .models import Post, Comment, User
 
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from os import listdir
 import os.path
@@ -30,6 +32,7 @@ def home(request):
         ]
         return choice(files)
     
+
     random_image_ootd = random_img()
     random_image_browse_fits = random_img()
     random_image_style_guide = random_img()
@@ -141,20 +144,17 @@ def edit_profile(request):
     
 
 
-# -- upload fitpic
-@login_required(login_url="user_login")
-def upload_fitpic(request):
-    return render(request, "main/fitpic_upload.html")
-
-
-
-
-
 
 # homepage
 
 def ootd(request):
     return render(request, "main/ootd.html")
+
+
+# search bar
+
+def search(request):
+    return render(request, "main/search.html")
 
 
 # -- browse fits // fitpic feed
@@ -170,31 +170,84 @@ class PostFeed(View):
         return render(request, "main/browse_fits.html", context)
 
 
+
 class UploadFitpic(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        form = CreatePostForm()
+        step = int(request.GET.get('step', 1))
+
+        image_form = CreatePostFormImage()
+        caption_form = CreatePostFormCaption()
+        pieces_form = CreatePostFormPieces()
+
+        # Retrieve the uploaded image from the session if it exists
+        image_url = request.session.get('image_url', '/media/upload_fitpic_default.jpg')
 
         context = {
-            "form": form,
+            "image_form": image_form,
+            "caption_form": caption_form,
+            "pieces_form": pieces_form,
+            "step": step,
+            "image_url": image_url,
         }
 
         return render(request, "main/upload_fitpic.html", context)
 
     def post(self, request, *args, **kwargs):
-        form = CreatePostForm(request.POST, request.FILES)
+        step = int(request.POST.get('step', 1))
+
+        if step == 1:
+            image_form = CreatePostFormImage(request.POST, request.FILES)
+            if image_form.is_valid():
+                # Get the uploaded image from the form
+                image = request.FILES.get('image')
+
+                # Save the image temporarily
+                temp_file_name = default_storage.save(f"temp/{image.name}", ContentFile(image.read()))
+                temp_file_path = default_storage.path(temp_file_name)
+                file_url = default_storage.url(temp_file_name)
+
+                # Store the file path in the session
+                request.session['image_url'] = file_url
+
+                caption_form = CreatePostFormCaption(request.POST)
+                if caption_form.is_valid():
+                    request.session['step1_data'] = caption_form.cleaned_data
+                    return JsonResponse({'success': True, 'next_step': 2})
+
+        elif step == 2:
+            form = CreatePostFormPieces(request.POST, request.FILES)
+            if form.is_valid():
+                step1_data = request.session.get('step1_data', {})
+                merged_data = {**step1_data, **form.cleaned_data}
+
+                # Retrieve the stored image URL from the session
+                image_url = request.session.get('image_url')
+                if image_url:
+                    # Save the image path to the post model
+                    new_post = Post(image=image_url, **merged_data)
+                    new_post.author = request.user
+                    new_post.save()
+
+                    # Cleanup: Move the image to the final directory
+                    final_file_name = f"user_posts/{image.name}"
+                    final_file_path = default_storage.save(final_file_name, ContentFile(image.read()))
+
+                    # Delete the temporary file
+                    if os.path.exists(temp_file_path):
+                        os.remove(temp_file_path)
+
+                    # Clear the session
+                    request.session.pop('step1_data', None)
+                    request.session.pop('image_url', None)
+
+                    return JsonResponse({'success': True, 'final_step': True})
+
+        return JsonResponse({'success': False})
 
 
-        if form.is_valid():
-            new_post = form.save(commit = False)
-            new_post.author = request.user
-            new_post.save()
-            return redirect("profile")
-        context = {
-            "form": form,
-        }
-        
-        return render(request, "main/upload_fitpic.html", context)
-    
+
+
+
 @login_required(login_url="user_login")
 def like(request):
     if request.POST.get("action") == "post":
@@ -257,15 +310,25 @@ class PostEditView(LoginRequiredMixin, UpdateView):
         if action == "save":
             return super().post(request, *args, **kwargs)
         elif action == "delete":
-            pk = self.kwargs["pk"]
-            post = self.get_object()
-            post.delete()
-            return redirect("profile")
+            return redirect("post_delete_confirmation", pk=self.kwargs["pk"])
 
 class PostDeleteConfirmation(DeleteView):
     model = Post
     template_name = "main/user/post_delete_confirmation.html"
     success_url = reverse_lazy("profile")
+
+    def delete(self, request, *args, **kwargs):
+        if "cancel" in request.POST:
+            return redirect(self.success_url)
+        
+        if "confirm" in request.POST:
+            post = self.get_object()
+            image_path = os.path.join(settings.MEDIA_ROOT, 'user_posts', str(post.image)) #should delete image from folder "user_posts"
+            if os.path.exists(image_path):
+                os.remove(image_path)
+            return super().delete(request, *args, **kwargs)
+
+        return redirect(self.success_url)
 
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)

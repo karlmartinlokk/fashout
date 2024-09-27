@@ -17,6 +17,8 @@ urlpatterns = [
     path("edit_profile/", views.edit_profile, name="edit_profile"),
     path("upload_fitpic/", UploadFitpic.as_view(), name="upload_fitpic"),
 
+    path("search/", views.search, name="search"),
+
     path("ootd/", views.ootd, name="ootd"),
 
     path("browse_fits/", PostFeed.as_view(), name="browse_fits"),

@@ -13,8 +13,10 @@
 
                 {% csrf_token %}
 
+                <div id="div_id_profile_image" style="margin-bottom: 1rem;">
+                    {{p_form|crispy}}
+                </div>
                 {{u_form|crispy}}
-                {{p_form|crispy}}
 
 
                 <br>

@@ -13,8 +13,8 @@
                         {% csrf_token %}
                         
                         <div>
-                            <input type="submit" value="Confirm">
-                            <a href="{% url 'profile' %}"> <button> Cancel </button> </a>
+                            <button type="submit" name="action" value="confirm">Confirm</button>
+                            <button type="submit" name="cancel">Cancel</button>
                         </div>
 
                     </form>
