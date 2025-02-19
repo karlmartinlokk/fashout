@@ -1,37 +1,125 @@
 {% extends "main.html" %}
 {% load crispy_forms_tags %}
 
-
 {% block content %}
-
-    <div class="main_wrapper">
-        <div class="post_create_wrapper">
-            
-
-                    <form method="POST">
-
-                        {% csrf_token %}
-                        <div class="post_create_grid">
-                            <div class="post_create_left">
-                                <label for="id_image">
-                                    <img id="preview_image" src="/media/user_posts/giabao_x.jpg" alt="Default Image" class="form_control_image">
-                                    {{ form.image }} 
-                                </label>
-                            </div>
-
-                            <div class="post_create_right">
-                                {{ form.caption }}
-                                <br>    
-                                <button type="submit" name="action" value="save"> Save </button>
-                                <a href="{% url 'post_delete_confirmation' pk=post.pk %}"> Delete </a>
-
-                            </div>
-                        </div>
-
-                    </form>
+<div class="main_wrapper">
+  <div class="post_create_wrapper">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="post_create_grid">
+        <div class="post_create_left">
+          <label for="id_image">
+            <img id="preview_image" src="{{ post.image.url }}" alt="Edit fitpic image" class="form_control_image">
+          </label>
         </div>
-    </div>
-    
 
-    
+        <div class="post_create_right">
+            <div class="tabs">
+            <button type="button" id="tab-caption" class="tab active">Caption</button>
+            <button type="button" id="tab-pieces" class="tab">Pieces</button>
+          </div>
+
+          <div id="caption-form" class="tab-content">
+            <div class="step1">
+              {% crispy caption_form %}
+              <br>
+              <button type="button" class="upload_next" id="next-caption">Next</button>
+            </div>
+          </div>
+
+          <div id="pieces-form" class="tab-content" style="display: none;">
+            <div class="step2">
+              {% crispy pieces_form %}
+              <br>
+              <button type="submit" class="upload_confirm">Save Changes</button>
+            </div>
+          </div>
+
+          <button type="button" class="delete_post" id="delete-post">Delete Post</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#tab-caption').click(function() {
+    $(this).addClass('active');
+    $('#tab-pieces').removeClass('active');
+    $('#caption-form').show();
+    $('#pieces-form').hide();
+  });
+
+  $('#tab-pieces').click(function() {
+    $(this).addClass('active');
+    $('#tab-caption').removeClass('active');
+    $('#pieces-form').show();
+    $('#caption-form').hide();
+  });
+
+  function submitForm(tab) {
+    var formData = new FormData($('form')[0]);
+    formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    formData.append('tab', tab);
+
+    $.ajax({
+      url: window.location.pathname,
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+        if (data.success) {
+          if (data.next_tab) {
+            $('#tab-caption').removeClass('active');
+            $('#tab-pieces').addClass('active');
+            $('#caption-form').hide();
+            $('#pieces-form').show();
+          } else if (data.final_step) {
+            window.location.href = '{% url "profile" %}';
+          }
+        } else {
+          alert('Form submission failed');
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', xhr.responseText);
+      }
+    });
+  }
+
+  $('#next-caption').click(function() {
+    submitForm('caption');
+  });
+
+  $('.upload_confirm').click(function(e) {
+    e.preventDefault();
+    submitForm('pieces');
+  });
+
+  $('#delete-post').click(function() {
+    if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+      $.ajax({
+        url: window.location.pathname,
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+          'action': 'delete'
+        },
+        success: function(data) {
+          if (data.deleted) {
+            window.location.href = '{% url "profile" %}';
+          } else {
+            alert('Failed to delete post.');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error:', xhr.responseText);
+        }
+      });
+    }
+  });
+});
+</script>
 {% endblock %}

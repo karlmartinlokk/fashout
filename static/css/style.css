@@ -194,6 +194,43 @@ form {
     transition: filter 0.1s;
 }
 
+.dropdown {
+    background-color: rgb(230, 225, 215);
+    padding: 1rem;
+    list-style: none;
+}
+
+
+.dropdown_user {
+    display: flex;
+    height: 2rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    filter: brightness(1);
+    transition: filter 0.5s;
+}
+
+.dropdown_user:hover {
+    filter: brightness(0.8);
+    transition: filter 0.5s;
+}
+
+.dropdown_username {
+    text-decoration: none;
+    color: black;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+.dropdown_profile_image {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+}
+
+#user_results_list a{
+    text-decoration: none;
+}
 
 
 
@@ -410,7 +447,8 @@ form {
 .account_info {
     display: inline-flex;
     flex-direction: column;
-
+    height: 10rem;
+    margin-left: 2rem;
 }
 
 .account_img {
@@ -425,17 +463,40 @@ form {
     align-items: center;
     padding: 0;
     margin: 0;
-    margin-left: 20px;
 }
 .account_heading {
     font-size: 2rem;
     margin: 0;
+    margin-top: 3rem;
 }
 
 .account_secondary {
     font-size: 1rem;
     margin: 0;
-    margin-left: 20px;
+}
+
+#follow_button {
+    background-color: #333;
+    color: #F4F4EE;
+    border: 0.1rem 0.1rem #F4F4EE;
+    padding: 1rem;
+    transition: filter 0.1s;
+}
+
+#follow_button.following { /* when following */
+    background-color: #F4F4EE;
+    color: #333;
+    border: 0.1rem 0.1rem #333;
+}
+
+#follow_button:hover {
+    filter: brightness(0.8);
+    transition: filter 0.1s;
+}
+
+.account_stats_wrapper {
+    margin-top: auto;
+    font-weight: bold;
 }
 
 .edit_profile_button {
@@ -583,6 +644,57 @@ input[type="password"] {
 
 
 /* homepage */
+
+.following_feed {
+    display: block;
+    height: 32.5rem;
+    width: 100%;
+    margin-top: 0rem; /* to fix top position */
+    padding: 1rem;
+    padding-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    background-color: #F4F4EE;
+}
+
+.following_feed h1 {
+    font-size: 3rem;
+    color: #333;
+    margin: 0;
+    margin-right: 1rem;
+}
+
+.following_feed h2 {
+    font-size: 1.5rem;
+    color: #a6a6a6;
+    font-weight: lighter;
+    margin: 0;
+}
+
+.following_posts {
+    display: flex;
+    gap: 2rem;
+    height: 28rem;
+    margin-top: 1rem;
+}
+
+.follower_post {
+    display: inline-block;
+    width: 18rem;
+    height: 28rem;
+    filter: opacity(0.9);
+    transition: filter 0.5s;
+}
+
+.follower_post img {
+    aspect-ratio: 9/14;
+    width: 100%;
+    object-fit: cover;
+}
+
+.follower_post:hover {
+    filter: opacity(1);
+}
 
 .homepage_button_grid {
     display: grid;
@@ -765,7 +877,7 @@ input[type="password"] {
 
 .post_view_wrapper {
     padding: 1rem;
-    background-color: #F4F4EE;
+    background-color: rgb(240, 235, 225);
 }
 
 .post_create_grid {
@@ -787,6 +899,31 @@ input[type="password"] {
     height: 20%;
     padding: 0.5rem;
     opacity: 0.7;
+}
+
+#id_caption {
+    width: calc(100% - 2*0.5rem);
+    outline: none; /* remove focus borders on selection */
+    padding: 1rem;
+    border: none;
+    resize: none;
+    background-color: rgb(240, 235, 225);
+}
+
+.post_create_right #id_pieces {
+    width: calc(100% - 0.3rem - 1rem);
+    height: 20%;
+    padding: 0.5rem;
+    opacity: 0.7;
+}
+
+#id_pieces {
+    width: calc(100% - 2*0.5rem);
+    outline: none; /* remove focus borders on selection */
+    padding: 1rem;
+    border: none;
+    resize: none;
+    background-color: rgb(240, 235, 225);
 }
 
 .upload_confirm {
@@ -945,6 +1082,36 @@ input[type='file'] {
     height: 50%;
 }
 
+.post_view_edit {
+    position: absolute;
+    top: 4rem;
+    left: 0.5rem;
+    display: inline-block;
+    background-color: #F4F4EE;
+    border-radius: 50%;
+    filter: opacity(0.5);
+    transition: 0.2s;
+}
+
+.post_view_edit:hover {
+    filter: opacity(1);
+    transition: 0.2s;
+}
+
+.post_view_edit a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+    width: 3rem;
+    padding: 0;
+    border-radius: 1rem;
+}
+
+.post_view_edit svg {
+    width: 50%;
+    height: 50%;
+}
 
 .post_view_nav_button {
     display: flex;
@@ -1085,18 +1252,8 @@ input[type='file'] {
     display: flex;
     flex: 1;
     height: 3rem;
-    background-color: pink;
 }
 
-
-#id_caption {
-    width: calc(100% - 2*0.5rem);
-    outline: none; /* remove focus borders on selection */
-    padding: 1rem;
-    border: none;
-    resize: none;
-    background-color: #F4F4EE;
-}
 
 .comment_submit {
     border: none;
@@ -1129,9 +1286,18 @@ input[type='file'] {
     padding-bottom: 0.2rem;
 }
 
+
 .comment_author h3 {
     font-size: 0.8rem;
     margin-right: 0.2rem;
+}
+
+.comment_author_same_as_post h3::after {
+    font-size: 0.8rem;
+    margin-right: 0.2rem;
+    content: "│author";
+    color: gray;
+    font-weight: lighter;
 }
 
 .comment_author h5 {
@@ -1151,7 +1317,7 @@ input[type='file'] {
     margin-left: 0;
     padding: 0.5rem;
     border-radius: 1rem;
-    border: solid rgb(230, 225, 215) 0.1rem;
+    background-color: rgb(230, 225, 215);
 }
 
 .comment_account_img_wrapper {
@@ -1181,7 +1347,7 @@ input[type='file'] {
     border: none;
     cursor: pointer;
     margin-left: auto;
-    background-color: #F4F4EE;
+    background-color: rgb(240, 235, 225);
 }
 
 .comment_delete_submit svg {

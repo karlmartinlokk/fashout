@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
+import json
 from django.views import View 
 from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 
 from .forms import CreateUserForm, LoginUserForm, UpdateUserForm, UpdateProfilePicForm, CreatePostFormImage, CreatePostFormCaption, CreatePostFormPieces, CommentForm
-from .models import Post, Comment, User
+from .models import Post, Comment, User, UserFollowing
 
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
@@ -24,6 +25,10 @@ from random import choice
 # -- navigation bar
 
 def home(request):
+
+    all_following = UserFollowing.objects.filter(follower=request.user).values_list('user', flat=True) #takes all the user ids where the follower is request.user
+    following_posts = Post.objects.filter(author__in=all_following)
+
     def random_img():
         dir_path = os.path.join(settings.BASE_DIR, "media/user_posts")
         files = [
@@ -41,6 +46,7 @@ def home(request):
         "random_image_ootd": random_image_ootd,
         "random_image_browse_fits": random_image_browse_fits,
         "random_image_style_guide": random_image_style_guide,
+        "following_posts": following_posts
     }
     
     return render(request, "main/home.html", context)
@@ -110,12 +116,35 @@ def profile(request, username=None):
     user = get_object_or_404(User, username=username)
     user_posts = Post.objects.filter(author=user).order_by("-date")
 
+    is_following = UserFollowing.objects.filter(user=user, follower=request.user).exists()
+    follower_count = UserFollowing.objects.filter(user=user).count()
+    following_count = UserFollowing.objects.filter(follower=user).count()
+
     context = {
         "user": user,
         "user_posts": user_posts,
+        "is_following": is_following,
+        "follower_count": follower_count,
+        "following_count": following_count,
     }
     return render(request, "main/user/profile.html", context)
 
+@login_required
+def toggle_follow(request, username):
+    user_to_follow = get_object_or_404(User, username=username)
+    current_user = request.user
+
+    # check if the user is already following the target user
+    follow_relation = UserFollowing.objects.filter(user=user_to_follow, follower=current_user)
+    
+    if follow_relation.exists():
+        follow_relation.delete()
+        action = 'unfollowed'
+    else:
+        UserFollowing.objects.create(user=user_to_follow, follower=current_user)
+        action = 'followed'
+
+    return JsonResponse({'status': 'success', 'action': action})
 
 
 # -- edit profile
@@ -153,8 +182,34 @@ def ootd(request):
 
 # search bar
 
-def search(request):
-    return render(request, "main/search.html")
+def user_search(request):
+    query = request.GET.get("search_query")
+    users = []
+
+    if query:
+        users = User.objects.filter(username__icontains=query) #filters users based on username (case-insensitive)
+
+    return render(request, "main/user_search.html", {
+        'query': query,
+        'users': users,
+    })
+
+def user_search(request):
+    search_query = request.GET.get("query", "")  # Get the query from GET parameters
+    if search_query:
+        users = User.objects.filter(username__icontains=search_query)[:5]
+        user_list = []
+        for user in users:
+            profile_image_url = user.profile.profile_image.url if hasattr(user, 'profile') and user.profile.profile_image else '/media/default.jpg'
+            user_list.append({
+                "id": user.id,
+                "username": user.username,
+                "profile_image_url": profile_image_url,  # Add profile image URL here
+            })
+        
+        return JsonResponse({"users": user_list})
+    return JsonResponse({"users": []})
+
 
 
 # -- browse fits // fitpic feed
@@ -179,8 +234,11 @@ class UploadFitpic(LoginRequiredMixin, View):
         caption_form = CreatePostFormCaption()
         pieces_form = CreatePostFormPieces()
 
-        # Retrieve the uploaded image from the session if it exists
-        image_url = request.session.get('image_url', '/media/upload_fitpic_default.jpg')
+        temp_file_name = request.session.get('temp_file_name')
+        if temp_file_name:
+            image_url = default_storage.url(temp_file_name)
+        else:
+            image_url = '/media/upload_fitpic_default.jpg'
 
         context = {
             "image_form": image_form,
@@ -193,56 +251,59 @@ class UploadFitpic(LoginRequiredMixin, View):
         return render(request, "main/upload_fitpic.html", context)
 
     def post(self, request, *args, **kwargs):
-        step = int(request.POST.get('step', 1))
+        tab = request.POST.get('tab', '')
+        image_file = request.FILES.get('image', None)
 
-        if step == 1:
-            image_form = CreatePostFormImage(request.POST, request.FILES)
-            if image_form.is_valid():
-                # Get the uploaded image from the form
-                image = request.FILES.get('image')
+        if tab == 'caption':
+            caption_form = CreatePostFormCaption(request.POST)
+            if caption_form.is_valid():
+                request.session['step1_data'] = caption_form.cleaned_data
+                if image_file:
+                    temp_file_name = default_storage.save(
+                        f"temp/{image_file.name}",
+                        ContentFile(image_file.read())
+                    )
+                    request.session['temp_file_name'] = temp_file_name
 
-                # Save the image temporarily
-                temp_file_name = default_storage.save(f"temp/{image.name}", ContentFile(image.read()))
-                temp_file_path = default_storage.path(temp_file_name)
-                file_url = default_storage.url(temp_file_name)
+                return JsonResponse({'success': True, 'next_tab': True})
+            else:
+                print("Caption form errors:", caption_form.errors)
 
-                # Store the file path in the session
-                request.session['image_url'] = file_url
-
-                caption_form = CreatePostFormCaption(request.POST)
-                if caption_form.is_valid():
-                    request.session['step1_data'] = caption_form.cleaned_data
-                    return JsonResponse({'success': True, 'next_step': 2})
-
-        elif step == 2:
-            form = CreatePostFormPieces(request.POST, request.FILES)
+        elif tab == 'pieces':
+            form = CreatePostFormPieces(request.POST)
             if form.is_valid():
                 step1_data = request.session.get('step1_data', {})
                 merged_data = {**step1_data, **form.cleaned_data}
 
-                # Retrieve the stored image URL from the session
-                image_url = request.session.get('image_url')
-                if image_url:
-                    # Save the image path to the post model
-                    new_post = Post(image=image_url, **merged_data)
+                temp_file_name = request.session.get('temp_file_name')
+                if temp_file_name:
+                    new_post = Post(image=temp_file_name, **merged_data)
                     new_post.author = request.user
                     new_post.save()
 
-                    # Cleanup: Move the image to the final directory
-                    final_file_name = f"user_posts/{image.name}"
-                    final_file_path = default_storage.save(final_file_name, ContentFile(image.read()))
+                    with default_storage.open(temp_file_name, 'rb') as f:
+                        file_data = f.read()
+                    final_file_name = default_storage.save(
+                        f"user_posts/{os.path.basename(temp_file_name)}",
+                        ContentFile(file_data)
+                    )
 
-                    # Delete the temporary file
+                    new_post.image = final_file_name
+                    new_post.save()
+
+                    temp_file_path = default_storage.path(temp_file_name)
                     if os.path.exists(temp_file_path):
                         os.remove(temp_file_path)
 
-                    # Clear the session
                     request.session.pop('step1_data', None)
-                    request.session.pop('image_url', None)
+                    request.session.pop('temp_file_name', None)
 
                     return JsonResponse({'success': True, 'final_step': True})
+            else:
+                print("Pieces form errors:", form.errors)
+                
+        return JsonResponse({'success': False, 'errors': form.errors})
 
-        return JsonResponse({'success': False})
 
 
 
@@ -296,39 +357,39 @@ def post_view(request, pk):
     return render(request, "main/user/post_view.html", context)
 
 
-class PostEditView(LoginRequiredMixin, UpdateView):
-    model = Post
-    fields = ["caption"]
-    template_name = "main/user/post_edit.html"
+def post_edit(request, pk):
+    post = get_object_or_404(Post, pk=pk)
 
-    def get_success_url(self):
-        pk = self.kwargs["pk"]
-        return reverse_lazy("post_view", kwargs={"pk": pk})
+    if request.method == "POST":
+        if request.POST.get("action") == "delete":
+            post.delete()
+            return JsonResponse({"deleted": True})
 
-    def post(self, request, *args, **kwargs):
-        action = request.POST.get("action")
-        if action == "save":
-            return super().post(request, *args, **kwargs)
-        elif action == "delete":
-            return redirect("post_delete_confirmation", pk=self.kwargs["pk"])
+        tab = request.POST.get("tab")
 
-class PostDeleteConfirmation(DeleteView):
-    model = Post
-    template_name = "main/user/post_delete_confirmation.html"
-    success_url = reverse_lazy("profile")
+        if tab == "caption":
+            caption_form = CreatePostFormCaption(request.POST, instance=post)
+            if caption_form.is_valid():
+                caption_form.save()
+                return JsonResponse({"success": True, "next_tab": True})
 
-    def delete(self, request, *args, **kwargs):
-        if "cancel" in request.POST:
-            return redirect(self.success_url)
-        
-        if "confirm" in request.POST:
-            post = self.get_object()
-            image_path = os.path.join(settings.MEDIA_ROOT, 'user_posts', str(post.image)) #should delete image from folder "user_posts"
-            if os.path.exists(image_path):
-                os.remove(image_path)
-            return super().delete(request, *args, **kwargs)
+        elif tab == "pieces":
+            pieces_form = CreatePostFormPieces(request.POST, instance=post)
+            if pieces_form.is_valid():
+                pieces_form.save()
+                return JsonResponse({"success": True, "final_step": True})
 
-        return redirect(self.success_url)
+        return JsonResponse({"success": False, "error": "Invalid form submission"})
+
+    else:
+        caption_form = CreatePostFormCaption(instance=post)
+        pieces_form = CreatePostFormPieces(instance=post)
+
+    return render(request, "main/user/post_edit.html", {
+        "post": post,
+        "caption_form": caption_form,
+        "pieces_form": pieces_form,
+    })
 
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
@@ -339,6 +400,5 @@ def delete_comment(request, comment_id):
 
 def style_guide(request):
     return render(request, "main/style_guide.html")
-
 
 

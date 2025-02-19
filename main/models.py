@@ -20,12 +20,31 @@ class Profile(models.Model): #class based view
             img.thumbnail(output_size)
             img.save(self.profile_image.path)
 
+class UserFollowing(models.Model):
+    user = models.ForeignKey(
+        User, related_name="followers", on_delete=models.CASCADE
+    )  # The user who is being followed
+    follower = models.ForeignKey(
+        User, related_name="following", on_delete=models.CASCADE
+    )  # The user who follows another user
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["follower", "user"], name="unique_followers")
+        ]
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.user.username}"
+
+
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE) # ForeignKey is one to many relationship i.e one user can have many posts
     date = models.DateTimeField(default=datetime.now)
     image = models.ImageField(upload_to="user_posts", blank=True, null=True)
-    caption = models.TextField()
+    caption = models.TextField(default="")
+    pieces = models.TextField(default="")
     likes = models.ManyToManyField(User, blank=True, related_name="post_likes")
     like_count = models.BigIntegerField(default="0")
 

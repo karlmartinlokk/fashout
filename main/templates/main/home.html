@@ -4,6 +4,23 @@
 
     <div class="main_wrapper">
 
+        {% if following_posts %}
+            <div class="following_feed">
+                <div style="display: flex; align-items: center">
+                <h1> What's new? </h1> <h2> From your following: </h2>
+                </div>
+                <div class="following_posts">
+                    {% for post in following_posts %}
+                        <div class="follower_post">
+                            <a href="{% url "post_view" pk=post.pk %}">
+                                <img src="{{ post.image.url }}">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="homepage_button_grid">
 
             <div class="homepage_button">

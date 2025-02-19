@@ -136,24 +136,25 @@ class CreatePostFormCaption(forms.ModelForm):
 
 class CreatePostFormPieces(forms.ModelForm):
     
-    caption = forms.CharField(
+    pieces = forms.CharField(
         label = "",
         max_length = 50,
         widget = forms.Textarea(attrs={
+            "id": "id_pieces",
             "rows": "2",
             "placeholder" : "Add pieces...",
-            "class": "form_control_caption",
+            "class": "form_control_pieces",
         }))
     
-    def clean_caption(self):
-            caption = self.cleaned_data.get('caption')
-            if len(caption) > 50:
-                raise forms.ValidationError("Caption length should not exceed 50 characters.")
-            return caption
+    def clean_pieces(self):
+            pieces = self.cleaned_data.get('pieces')
+            if len(pieces) > 50:
+                raise forms.ValidationError("Pieces length should not exceed 50 characters.")
+            return pieces
 
     class Meta:
         model = Post
-        fields = ["caption"]
+        fields = ["pieces"]
 
 
 

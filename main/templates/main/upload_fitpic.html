@@ -2,124 +2,121 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="main_wrapper">
-        <div class="post_create_wrapper">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="post_create_grid">
-                    <div class="post_create_left">
-                        <label for="id_image">
-                            <img id="preview_image" src="{{ image_url }}" alt="Upload fitpic default image" class="form_control_image">
-                            {{ image_form.image }} 
-                        </label>
-                    </div>
-
-
-                    
-                    <div class="post_create_right">
-                        {% if step == 1 %}
-                            <div class="step1">
-                                {% crispy caption_form %}
-                                <br>    
-                                <button class="upload_next" type="submit" name="step" value="1"> Next </button>
-                                <button class="upload_cancel"> <a href="javascript:history.back()" style="text-decoration: none; color:black"> Cancel </a> </button>
-                            </div>
-                        {% elif step == 2 %}
-                            <div class="step2">
-                                {% crispy pieces_form %}
-                                <br>    
-                                <button class="upload_confirm" type="submit" name="step" value="2"> Confirm </button>
-                                <button class="upload_cancel"> <a href="javascript:history.back()" style="text-decoration: none; color:black"> Cancel </a> </button>
-                            </div>
-                        {% endif %}
-                        
-                        <div style="text-align:center;margin-top:90%;">
-                            {% for i in steps_range %}
-                                <span class="step{% if step == i %} active{% endif %}"></span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </form>
+<div class="main_wrapper">
+  <div class="post_create_wrapper">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="post_create_grid">
+        <div class="post_create_left">
+          <label for="id_image">
+            <img id="preview_image" src="{{ image_url }}" alt="Upload fitpic default image" class="form_control_image">
+            {{ image_form.image }}
+          </label>
         </div>
-    </div>
+        <div class="post_create_right">
+          <div class="tabs">
+            <button type="button" id="tab-caption" class="tab {% if step == 1 %}active{% endif %}">Caption</button>
+            <button type="button" id="tab-pieces" class="tab {% if step == 2 %}active{% endif %}">Pieces</button>
+          </div>
 
-    <script>
-        $(document).ready(function() {
-            var imageFile = null; // Store the uploaded image file globally
-            
-            // Function to submit the form via AJAX
-            function submitForm(step) {
-                var formData = new FormData($('form')[0]);
-                formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
-                formData.append('step', step);
+          <div id="caption-form" class="tab-content" style="display: {% if step == 1 %}block{% else %}none{% endif %};">
+            <div class="step1">
+              {% crispy caption_form %}
+              <br>
+              <button type="button" class="upload_next" id="next-caption">Next</button>
+            </div>
+          </div>
 
-                if (step == 2 && imageFile) {
-                    // Append the previously selected image file for step 2
-                    formData.append('image', imageFile);
+          <div id="pieces-form" class="tab-content" style="display: {% if step == 2 %}block{% else %}none{% endif %};">
+            <div class="step2">
+              {% crispy pieces_form %}
+              <br>
+              <button type="submit" class="upload_confirm">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  var imageFile = null;
+
+  $('#tab-caption').click(function() {
+    $(this).addClass('active');
+    $('#tab-pieces').removeClass('active');
+    $('#caption-form').show();
+    $('#pieces-form').hide();
+  });
+
+  $('#tab-pieces').click(function() {
+    $(this).addClass('active');
+    $('#tab-caption').removeClass('active');
+    $('#pieces-form').show();
+    $('#caption-form').hide();
+  });
+
+  $(document).on('change', '#id_image', function() {
+    previewImage(this);
+  });
+
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        $('#preview_image').attr('src', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function submitForm(tab) {
+    var formData = new FormData($('form')[0]);
+    formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    formData.append('tab', tab);
+
+    if (tab === 'pieces') {
+        formData.append('pieces', $('#id_pieces').val());  // Ensure pieces data is included
+    }
+
+    $.ajax({
+        url: $('form').attr('action'),
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            if (data.success) {
+                if (data.next_tab) {
+                    $('#tab-caption').removeClass('active');
+                    $('#tab-pieces').addClass('active');
+                    $('#caption-form').hide();
+                    $('#pieces-form').show();
+                } else if (data.final_step) {
+                    window.location.href = '{% url "profile" %}';
                 }
-
-                $.ajax({
-                    url: $('form').attr('action'),
-                    type: 'post',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        if (data.success) {
-                            if (data.next_step) {
-                                window.location.href = window.location.pathname + '?step=' + data.next_step;
-                            } else {
-                                // Redirect to profile if final step is complete
-                                window.location.href = '{% url "profile" %}';
-                            }
-                        } else {
-                            console.log('Form submission failed');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', xhr.responseText);
-                    }
-                });
+            } else {
+                alert('Form submission failed');
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', xhr.responseText);
+        }
+    });
+  }
 
-            // Function to preview the uploaded image
-            function previewImage(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
 
-                    // Save the uploaded file to the global variable
-                    imageFile = input.files[0];
+  
+  $('#next-caption').click(function() {
+    submitForm('caption');
+  });
 
-                    reader.onload = function(e) {
-                        $('#preview_image').attr('src', e.target.result); // Update the image preview
-                    };
-
-                    reader.readAsDataURL(imageFile); // Convert the file to a Base64-encoded string
-                }
-            }
-
-            // Event listener for when the image file changes
-            $(document).on('change', '#id_image', function() {
-                previewImage(this); // Call the preview function
-            });
-
-            // Event listener for the 'Confirm' button in step 2
-            $(document).on('click', '.upload_confirm', function(e) {
-                e.preventDefault();
-                var step = $(this).val(); // Get the step value (2 for confirmation)
-                console.log('Confirm button clicked for step:', step);
-                submitForm(step); // Submit the form for step 2
-            });
-
-            // Event listener for the 'Next' button in step 1
-            $(document).on('click', '.upload_next', function(e) {
-                e.preventDefault();
-                var step = $(this).val(); // Get the step value (1 for next step)
-                console.log('Next button clicked for step:', step);
-                submitForm(step); // Submit the form for step 1
-            });
-        });
-    </script>
-    
+  $('.upload_confirm').click(function(e) {
+    e.preventDefault();
+    submitForm('pieces');
+  });
+});
+</script>
 {% endblock %}

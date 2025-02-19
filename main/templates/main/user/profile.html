@@ -19,7 +19,25 @@
                         {% endif %}
                     </div>
 
-                    <p class="account_secondary"> {{ user.email }}</p>
+                    <p class="account_secondary">
+                    {% if request.user != user %}
+                        {% if is_following %}
+                            <button id="follow_button" data-username="{{ user.username }}" data-following="true" class="following">
+                                Following
+                            </button>
+                            {% else %}
+                            <button id="follow_button" data-username="{{ user.username }}" data-following="false">
+                                Follow
+                            </button>
+                            {% endif %}
+                    {% endif %}
+                    </p>
+
+                    <div class="account_stats_wrapper">
+                        <p class="account_stats"> 
+                            {{ user_posts|length }} {% if user_posts|length == 1 %} Post {% else %} Posts | {% endif %} {{ follower_count }} Followers | {{ following_count }} Following
+                        </p> <!-- len() i.e count of all posts-->
+                    </div>
                 </div>
             </div>
 
@@ -61,5 +79,58 @@
     </div>
 
 
+
+
+    <script>
+        $(document).ready(function () {
+            const $btn = $('#follow_button');
+
+            // Function to attach hover events for "Following" state.
+            function attachHover() {
+                $btn.off('mouseenter mouseleave');
+                if ($btn.data('following') === true || $btn.data('following') === "true") {
+                    $btn.on('mouseenter', function () {
+                        $(this).text('Unfollow');
+                    });
+                    $btn.on('mouseleave', function () {
+                        $(this).text('Following');
+                    });
+                }
+            }
+
+            // Attach hover events on page load if following.
+            attachHover();
+
+            $btn.on('click', function () {
+                let username = $btn.data('username');
+        
+                $.ajax({
+                    url: `/follow/${username}/`,
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    data: JSON.stringify({ action: 'toggle' }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            if (data.action === 'followed') {
+                                $btn.data('following', "true");
+                                $btn.addClass('following');
+                                $btn.text('Following');
+                                attachHover();
+                            } else {
+                                $btn.data('following', "false");
+                                $btn.removeClass('following');
+                                $btn.off('mouseenter mouseleave');
+                                $btn.text('Follow');
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Follow toggle error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 
 {% endblock %}

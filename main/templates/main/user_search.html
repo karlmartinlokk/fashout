@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+    <div>Search Results for "{{query}}":</div>
+    <ul>
+        {% for user in users %}
+            <li class="user_search_result_user">
+                <div class="user_search_result_profile">
+                    <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}'s profile image">
+                </div>
+                <div class="user_search_result_username">{{ user.username }}</div>
+            <li>
+        {% empty %}
+            <p>No users found for "{{query}}</p>
+        {% endfor %}
+    </ul>
+
+    
+{% endblock %}
