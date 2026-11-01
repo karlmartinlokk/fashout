@@ -26,8 +26,12 @@ from random import choice
 
 def home(request):
 
-    all_following = UserFollowing.objects.filter(follower=request.user).values_list('user', flat=True) #takes all the user ids where the follower is request.user
-    following_posts = Post.objects.filter(author__in=all_following)
+    if request.user.is_authenticated:
+        all_following = UserFollowing.objects.filter(follower=request.user).values_list('user', flat=True) #takes all the user ids where the follower is request.user
+        following_posts = Post.objects.filter(author__in=all_following)
+    else:
+        all_following = []
+        following_posts = Post.objects.none()
 
     def random_img():
         dir_path = os.path.join(settings.BASE_DIR, "media/user_posts")
@@ -35,17 +39,9 @@ def home(request):
             pic for pic in listdir(dir_path)
             if isfile(join(dir_path, pic))
         ]
-        return choice(files)
-    
-
-    random_image_ootd = random_img()
-    random_image_browse_fits = random_img()
-    random_image_style_guide = random_img()
+        return choice(files) 
 
     context = {
-        "random_image_ootd": random_image_ootd,
-        "random_image_browse_fits": random_image_browse_fits,
-        "random_image_style_guide": random_image_style_guide,
         "following_posts": following_posts
     }
     

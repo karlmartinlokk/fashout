@@ -3,7 +3,7 @@
 }
 
 body {
-    background-color: rgb(225, 225, 220);
+    background-color: #F4F4EE;
     padding: 0;
     margin: 0;
 }
@@ -61,8 +61,7 @@ form {
     position: fixed;
     align-items: center;
     justify-content: space-between;
-    background-color: rgb(240, 235, 225);
-    border: solid black;
+    background-color: rgb(245, 240, 230);
 }
 
 .logo {
@@ -71,7 +70,7 @@ form {
 }
 
 .logo a{
-    color: black;
+    color: rgb(30, 30, 60);
     text-decoration: none;
     font-size: 3rem;
 }
@@ -82,7 +81,7 @@ form {
     padding: 0;
     width: 5rem; /* same as margin given in main*/
     height: calc(100vh - 4rem);
-    background-color: rgb(240, 235, 225);
+    background-color: rgb(245, 240, 230);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -167,7 +166,7 @@ form {
 .search_input {
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     border: solid 0.1rem #c9c9c9;
-    background-color: rgb(240, 235, 225);
+    background-color: rgb(245, 240, 230);
     color: rgb(120, 120, 120);
     font-family: "Raleway", sans-serif;
     border-radius: 0.25rem;
@@ -195,9 +194,11 @@ form {
 }
 
 .dropdown {
-    background-color: rgb(230, 225, 215);
+    background-color: rgb(235, 230, 220);
     padding: 1rem;
     list-style: none;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 }
 
 
@@ -237,7 +238,7 @@ form {
 
 
 .footer {
-    background-color: #333;
+    background-color: rgb(30,30,40);
     width: 100%;
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -433,7 +434,7 @@ form {
     width: 94%; /* 100 - margin*2 */
     border-radius: 25px;
     overflow:hidden; /* this makes border-radius take effect, otherwise it wont work */
-    background-color: rgb(240, 235, 225);
+    background-image: linear-gradient(to bottom right, rgb(245, 240, 230),rgb(240, 235, 225));
 }
 
 .account_info_wrapper {
@@ -533,7 +534,7 @@ form {
 
 
 .profile_post {
-    display: flex;
+    display: grid;
     align-items: center;
     justify-content: center;
     background-color: rgb(120, 120, 120);
@@ -542,8 +543,11 @@ form {
     border-radius: 0.5rem;
     overflow: hidden;
     transition: filter 0.3s; /* transition: brightness 0.5s doesnt work */
+}
 
-
+.profile_post a {
+    display: grid;
+    text-decoration: none;
 
 }
 
@@ -553,14 +557,33 @@ form {
 
 .profile_post img {
     display: block;
+    grid-column: 1;
+    grid-row: 1;
     object-fit: cover;
     width: 18rem;
     height: 18rem;
 }
 
-.profile_post:hover {
+.profile_post:hover img{
     filter: brightness(0.7);
-    transition: filter 0.3s; /* transition: brightness 0.5s doesnt work */
+}
+
+.profile_post span{
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 999;
+    width: 18rem;
+    height: 18rem;
+    text-align: center;
+    margin-top: 45%;
+    color: white;
+    filter: opacity(0);
+    transition: filter 0.3s;
+}
+
+.profile_post:hover span{
+    filter: opacity(1);
+
 }
 
 .profile_favorite_brands {
@@ -647,14 +670,14 @@ input[type="password"] {
 
 .following_feed {
     display: block;
-    height: 32.5rem;
-    width: 100%;
-    margin-top: 0rem; /* to fix top position */
-    padding: 1rem;
-    padding-top: 1rem;
+    height: 17rem;
+    width: calc(100% - 8rem);
+    margin: 2rem;
+    margin-top: 1rem; /* to fix top position */
+    padding: 2rem;
     margin-bottom: 1rem;
     border-radius: 1rem;
-    background-color: #F4F4EE;
+    background-image: linear-gradient(to right, rgb(240, 235, 225), rgb(235, 230, 220));
 }
 
 .following_feed h1 {
@@ -673,68 +696,48 @@ input[type="password"] {
 
 .following_posts {
     display: flex;
-    gap: 2rem;
-    height: 28rem;
+    gap: 1.5rem;
     margin-top: 1rem;
 }
 
 .follower_post {
+    width: 9rem;
+}
+
+.follower_post_img {
     display: inline-block;
-    width: 18rem;
-    height: 28rem;
+    aspect-ratio: 6/9;
+    width: 8rem;
+}
+
+.follower_post_img img {
+    aspect-ratio: 6/9;
+    width: 100%;
+    object-fit: cover;
     filter: opacity(0.9);
-    transition: filter 0.5s;
+    transition: filter 0.3s;
 }
 
-.follower_post img {
-    aspect-ratio: 9/14;
-    width: 100%;
-    object-fit: cover;
-}
-
-.follower_post:hover {
+.follower_post_img :hover {
     filter: opacity(1);
+    transition: filter 0.3s;
 }
 
-.homepage_button_grid {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 1rem;
-}
-
-.homepage_button {
-    display: flex;
-    opacity: 0.8;
-    transition: opacity 0.5s;
-    justify-content: center;
-    text-align: center;
+.follower_post_profile img{
     position: relative;
-}
-
-.homepage_button:hover {
-    transition: opacity 0.5s;
-    opacity: 1;
-}
-
-
-.homepage_button img {
-    display: block;
+    z-index: 2;
+    pointer-events: none;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
     object-fit: cover;
-    width: 100%;
-    height: 40rem;
+    margin-left: 5rem;
+    margin-top: -4rem;
+    box-shadow: #333 0 0 0.5rem;
+    filter: brightness(0.9);
 }
 
-.homepage_button span {
-    z-index: 1;
-    display: inline-block;
-    position: absolute;
-    top: 75%;
-    transform: translate(-50%, -50%); /* Center the text vertically and horizontally */
-    color: white;
-    text-decoration: none;
-    font-size: 2rem;
-}
+
 
 
 
@@ -752,7 +755,7 @@ input[type="password"] {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: rgb(240, 235, 225);
+    background-image: linear-gradient(to bottom right, rgb(245, 240, 230),rgb(240, 235, 225));
     border-radius: 0.5rem;
     padding: 1rem;
 }
@@ -767,18 +770,15 @@ input[type="password"] {
     margin-right: 0.5rem;
     border-bottom: solid #333;
     font-size: 3rem;
+    color: rgb(30, 30, 60);
 }
 
-
-/*.browse_wrapper_left {
-
-}*/
 
 .browse_wrapper_right {
     display: block;
     text-align: center;
     padding: 1rem;
-    background-color: rgb(240, 235, 225);
+    background-image: linear-gradient(to bottom right, rgb(245, 240, 230),rgb(240, 235, 225));
     border-radius: 0.5rem;
 }
 
@@ -794,7 +794,7 @@ input[type="password"] {
     padding: 0.5rem;
     width: calc(100%-1rem);
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 0.5rem;
+    grid-gap: 1rem;
 }
 
 .browse_fits_post {
@@ -802,7 +802,8 @@ input[type="password"] {
     flex-direction: column;
     box-shadow: 0 0 0.15rem 0.01rem #333;
     width: 100%;
-    aspect-ratio: 9/16;
+    aspect-ratio: 6/9;
+    border-radius: 0.25rem;
     overflow: hidden;
 }
 
@@ -811,7 +812,7 @@ input[type="password"] {
     display: block;
     object-fit: cover;
     width: 100%;
-    aspect-ratio: 9/16;
+    aspect-ratio: 6/9;
     transition: filter 0.3s;
 }
 
@@ -1177,6 +1178,7 @@ input[type='file'] {
 .post_view_caption h5 {
     font-size: 0.6rem;
     color:rgb(120, 120, 120);
+    margin: 0;
 }
 
 .post_view_author {
@@ -1275,7 +1277,9 @@ input[type='file'] {
 .comment {
     display: flex;
     flex-direction: column;
-    border-radius: 0.2rem;
+    border-radius: 0.5rem;
+    background-color: #F4F4EE;
+    padding: 0.5rem;
 }
 
 .comment_author {
@@ -1303,6 +1307,7 @@ input[type='file'] {
 .comment_author h5 {
     font-size: 0.5rem;
     color: #a6a6a6;
+    padding-top: 0.1rem;
 }
 
 .comment_caption {
@@ -1316,8 +1321,6 @@ input[type='file'] {
     margin-top: 0;
     margin-left: 0;
     padding: 0.5rem;
-    border-radius: 1rem;
-    background-color: rgb(230, 225, 215);
 }
 
 .comment_account_img_wrapper {

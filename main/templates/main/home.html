@@ -12,40 +12,22 @@
                 <div class="following_posts">
                     {% for post in following_posts %}
                         <div class="follower_post">
-                            <a href="{% url "post_view" pk=post.pk %}">
-                                <img src="{{ post.image.url }}">
-                            </a>
+                            <div class="follower_post_img">
+                                <a href="{% url "post_view" pk=post.pk %}">
+                                    <img src="{{ post.image.url }}">
+                                </a>
+                            </div>
+                            <div class="follower_post_profile">
+                                <img src="{{ post.author.profile.profile_image.url }}">
+                            </div>
                         </div>
+                        
                     {% endfor %}
                 </div>
             </div>
         {% endif %}
 
-        <div class="homepage_button_grid">
-
-            <div class="homepage_button">
-                <a href="{% url 'ootd' %}">
-                    <img src="media/user_posts/{{ random_image_ootd }}" alt="OOTD">
-                    <span> OOTD </span>
-                </a>
-            </div>
-
-
-            <div class="homepage_button">
-                <a href="{% url 'browse_fits' %}">
-                    <img src="media/user_posts/{{ random_image_browse_fits }}" alt="BROWSE FITS">
-                    <span> BROWSE FITS </span>
-                </a>
-            </div> 
-
-            <div class="homepage_button">
-                <a href="{% url 'style_guide' %}">
-                    <img src="media/user_posts/{{ random_image_style_guide }}" alt="STYLE GUIDE">
-                    <span> STYLE GUIDE </span>
-                </a>
-            </div>
-
-        </div>
+        
 
 </div>
 

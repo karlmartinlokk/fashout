@@ -35,7 +35,7 @@
 
                     <div class="account_stats_wrapper">
                         <p class="account_stats"> 
-                            {{ user_posts|length }} {% if user_posts|length == 1 %} Post {% else %} Posts | {% endif %} {{ follower_count }} Followers | {{ following_count }} Following
+                            {{ user_posts|length }} {% if user_posts|length == 1 %} Post {% else %} Posts | {% endif %} {{ follower_count }} {% if follower_count == 1 %} Follower {% else %} Followers {% endif %} | {{ following_count }} Following
                         </p> <!-- len() i.e count of all posts-->
                     </div>
                 </div>
@@ -59,6 +59,7 @@
                             <div class="profile_post">
                                 <a href="{% url "post_view" pk=post.pk %}"> 
                                     <img src="{{ post.image.url }}"> 
+                                    <span> {{ post.date|date:"d/m/y" }} </span>
                                 </a>
                             </div>
 
